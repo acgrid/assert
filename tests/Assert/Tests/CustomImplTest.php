@@ -8,7 +8,6 @@ use acgrid\Assert\AssertionChain;
 use acgrid\Assert\InvalidArgumentException;
 use acgrid\Assert\LazyAssertion;
 use acgrid\Assert\LazyAssertionException;
-use PHPUnit\Framework\TestCase;
 
 class MyAssertion extends Assertion {
     protected static $exceptionClass = MyException::class;
@@ -26,7 +25,7 @@ class MyLazyAssertion extends LazyAssertion  {
 
 class MyLazyException extends LazyAssertionException {}
 
-class CustomImplTest extends TestCase
+class CustomImplTest extends \PHPUnit_Framework_TestCase
 {
 
     protected function setUp()

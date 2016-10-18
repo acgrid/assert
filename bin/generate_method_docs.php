@@ -1,5 +1,8 @@
 <?php
 
+use acgrid\Assert\Assertion;
+use acgrid\Assert\AssertionChain;
+
 class MethodDocGenerator
 {
     public function generateChainDocs()
@@ -51,7 +54,7 @@ class MethodDocGenerator
 
     private function gatherAssertions()
     {
-        $reflClass = new ReflectionClass('Assert\Assertion');
+        $reflClass = new ReflectionClass(Assertion::class);
 
         return array_filter(
             $reflClass->getMethods(ReflectionMethod::IS_STATIC),
@@ -142,7 +145,7 @@ class MethodDocGenerator
 
     private function gatherAssertionChainSwitches()
     {
-        $reflClass = new ReflectionClass('Assert\AssertionChain');
+        $reflClass = new ReflectionClass(AssertionChain::class);
 
         return array_filter(
             $reflClass->getMethods(ReflectionMethod::IS_PUBLIC),

@@ -1,6 +1,6 @@
 # Assert
 
-Travis Status: [![Build Status](https://travis-ci.org/acgrid/assert.svg?branch=master)](https://travis-ci.org/beberlei/assert)
+Travis Status: [![Build Status](https://travis-ci.org/acgrid/assert.svg?branch=master)](https://travis-ci.org/acgrid/assert)
 
 **This is a personal forked version. It has been rewritten so that all the components can be overridden in user land.**
 **Also, this fork will ONLY work on PHP 5.5 or above due to class name constants.**
