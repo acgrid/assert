@@ -11,7 +11,25 @@
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
 
-namespace Assert;
+namespace acgrid\Assert;
+
+if (!function_exists(__NAMESPACE__ . '\chainClass')){
+    function chainClass($class = null)
+    {
+        static $className;
+        return isset($class) && is_subclass_of($class, AssertionChain::class, true) ?
+            ($className = $class) : ($className ?: AssertionChain::class);
+    }
+}
+
+if (!function_exists(__NAMESPACE__ . '\lazyClass')){
+    function lazyClass($class = null)
+    {
+        static $className;
+        return isset($class) && is_subclass_of($class, LazyAssertion::class, true) ?
+            ($className = $class) : ($className ?: LazyAssertion::class);
+    }
+}
 
 if (!function_exists(__NAMESPACE__ . '\that')) {
     /**
@@ -32,11 +50,12 @@ if (!function_exists(__NAMESPACE__ . '\that')) {
      * @param string $defaultMessage
      * @param string $defaultPropertyPath
      *
-     * @return \Assert\AssertionChain
+     * @return AssertionChain
      */
     function that($value, $defaultMessage = null, $defaultPropertyPath = null)
     {
-        return new AssertionChain($value, $defaultMessage, $defaultPropertyPath);
+        $class = chainClass();
+        return new $class($value, $defaultMessage, $defaultPropertyPath);
     }
 }
 
@@ -48,7 +67,7 @@ if (!function_exists(__NAMESPACE__ . '\thatAll')) {
      * @param string $defaultMessage
      * @param string $defaultPropertyPath
      *
-     * @return \Assert\AssertionChain
+     * @return AssertionChain
      */
     function thatAll($values, $defaultMessage = null, $defaultPropertyPath = null)
     {
@@ -64,7 +83,7 @@ if (!function_exists(__NAMESPACE__ . '\thatNullOr')) {
      * @param string $defaultMessage
      * @param string $defaultPropertyPath
      *
-     * @return \Assert\AssertionChain
+     * @return AssertionChain
      */
     function thatNullOr($value, $defaultMessage = null, $defaultPropertyPath = null)
     {
@@ -76,10 +95,11 @@ if (!function_exists(__NAMESPACE__ . '\lazy')) {
     /**
      * Create a lazy assertion object.
      *
-     * @return \Assert\LazyAssertion
+     * @return LazyAssertion
      */
     function lazy()
     {
-        return new LazyAssertion();
+        $class = lazyClass();
+        return new $class;
     }
 }

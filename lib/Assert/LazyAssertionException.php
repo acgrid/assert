@@ -11,7 +11,7 @@
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
 
-namespace Assert;
+namespace acgrid\Assert;
 
 class LazyAssertionException extends \InvalidArgumentException
 {
@@ -30,10 +30,11 @@ class LazyAssertionException extends \InvalidArgumentException
 
         $i = 1;
         foreach ($errors as $error) {
+            /** @var InvalidArgumentException $error */
             $message .= sprintf("%d) %s: %s\n", $i++, $error->getPropertyPath(), $error->getMessage());
         }
 
-        return new self($message, $errors);
+        return new static($message, $errors);
     }
 
     public function __construct($message, array $errors)

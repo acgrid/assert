@@ -2,7 +2,8 @@
 
 namespace Assert\Tests;
 
-use Assert\Assertion;
+use acgrid\Assert\Assertion;
+use acgrid\Assert\AssertionFailedException;
 
 class PR142_AllowOverridingStringifyTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +27,7 @@ class PR142_AllowOverridingStringifyTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidStringWithOverriddenStringify($invalidString, $exceptionMessage)
     {
-        $this->setExpectedException('Assert\AssertionFailedException', $exceptionMessage, Assertion::INVALID_STRING);
+        $this->setExpectedException(AssertionFailedException::class, $exceptionMessage, Assertion::INVALID_STRING);
         PR142_OverrideStringify::string($invalidString);
     }
 }

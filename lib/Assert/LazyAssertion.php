@@ -11,7 +11,7 @@
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
 
-namespace Assert;
+namespace acgrid\Assert;
 
 /**
  * Chaining builder for lazy assertions
@@ -95,6 +95,8 @@ namespace Assert;
  */
 class LazyAssertion
 {
+    protected static $exceptionClass = LazyAssertionException::class;
+
     private $currentChainFailed = false;
     private $currentChain;
     private $errors = array();
@@ -102,7 +104,7 @@ class LazyAssertion
     public function that($value, $propertyPath, $defaultMessage = null)
     {
         $this->currentChainFailed = false;
-        $this->currentChain = \Assert\that($value, $defaultMessage, $propertyPath);
+        $this->currentChain = \acgrid\Assert\that($value, $defaultMessage, $propertyPath);
 
         return $this;
     }
@@ -124,12 +126,12 @@ class LazyAssertion
     }
 
     /**
-     * @throws \Assert\LazyAssertionException
+     * @throws LazyAssertionException
      */
     public function verifyNow()
     {
         if ($this->errors) {
-            throw LazyAssertionException::fromErrors($this->errors);
+            throw call_user_func([static::$exceptionClass, 'fromErrors'], $this->errors);
         }
     }
 }

@@ -1,8 +1,9 @@
 # Assert
 
-Travis Status: [![Build Status](https://travis-ci.org/beberlei/assert.svg?branch=master)](https://travis-ci.org/beberlei/assert)
+Travis Status: [![Build Status](https://travis-ci.org/acgrid/assert.svg?branch=master)](https://travis-ci.org/beberlei/assert)
 
-Latest version: [![Latest Stable Version](https://poser.pugx.org/beberlei/assert/v/stable)](https://packagist.org/packages/beberlei/assert)
+**This is a personal forked version. It has been rewritten so that all the components can be overridden in user land.**
+**Also, this fork will ONLY work on PHP 5.5 or above due to class name constants.**
 
 A simple php library which contains assertions and guard methods for input validation (not filtering!) in business-model, libraries and application low-level code.
 The library can be used to implement pre-/post-conditions on input data.
@@ -16,14 +17,14 @@ The library is not using Symfony or Zend Validators for a reason: The checks hav
 Using Composer:
 
 ```sh
-composer require beberlei/assert
+composer require acgrid/assert
 ```
 
 ## Example usages
 
 ```php
 <?php
-use Assert\Assertion;
+use acgrid\Assert\Assertion;
 
 function duplicateFile($file, $times)
 {
@@ -40,6 +41,8 @@ Real time usage with [Azure Blob Storage](https://github.com/beberlei/azure-blob
 
 ```php
 <?php
+use acgrid\Assert\Assertion;
+class Foo{
 public function putBlob($containerName = '', $blobName = '', $localFileName = '', $metadata = array(), $leaseId = null, $additionalHeaders = array())
 {
     Assertion::notEmpty($containerName, 'Container name is not specified');
@@ -57,6 +60,7 @@ public function putBlob($containerName = '', $blobName = '', $localFileName = ''
     // Put the data to Windows Azure Storage
     return $this->putBlobData($containerName, $blobName, file_get_contents($localFileName), $metadata, $leaseId, $additionalHeaders);
 }
+}
 ```
 
 ### NullOr helper
@@ -65,6 +69,8 @@ A helper method (`Assertion::nullOr*`) is provided to check if a value is null O
 
 ```php
 <?php
+use acgrid\Assert\Assertion;
+
 Assertion::nullOrMax(null, 42); // success
 Assertion::nullOrMax(1, 42);    // success
 Assertion::nullOrMax(1337, 42); // exception
@@ -78,38 +84,39 @@ the values:
 
 ```php
 <?php
+use acgrid\Assert\Assertion;
 Assertion::allIsInstanceOf(array(new \stdClass, new \stdClass), 'stdClass'); // success
 Assertion::allIsInstanceOf(array(new \stdClass, new \stdClass), 'PDO');      // exception
 ```
 
-### \Assert\that() Chaining
+### \acgrid\Assert\that() Chaining
 
 Using the static API on values is very verbose when checking values against multiple assertions.
 Starting with 2.0 of Assert there is a much nicer fluent API for assertions, starting
-with ``\Assert\that($value)`` and then receiving the assertions you want to call
+with ``\acgrid\Assert\that($value)`` and then receiving the assertions you want to call
 on the fluent interface. You only have to specify the `$value` once.
 
 ```php
 <?php
-\Assert\that($value)->notEmpty()->integer();
-\Assert\that($value)->nullOr()->string()->startsWith("Foo");
-\Assert\that($values)->all()->float();
+\acgrid\Assert\that($value)->notEmpty()->integer();
+\acgrid\Assert\that($value)->nullOr()->string()->startsWith("Foo");
+\acgrid\Assert\that($values)->all()->float();
 ```
 
-There are also two shortcut function ``\Assert\thatNullOr()`` and ``\Assert\thatAll()`` enabling
+There are also two shortcut function ``\acgrid\Assert\thatNullOr()`` and ``\acgrid\Assert\thatAll()`` enabling
 the "nullOr" or "all" helper respectively.
 
 ### Lazy Assertions
 
 There are many cases in web development, especially when involving forms, you want to collect several errors
 instead of aborting directly on the first error. This is what lazy assertions are for. Their API
-works exactly like the fluent ``\Assert\that()`` API, but instead of throwing an Exception directly,
+works exactly like the fluent ``\acgrid\Assert\that()`` API, but instead of throwing an Exception directly,
 they collect all errors and only trigger the exception when the method
-``verifyNow()`` is called on the ``Assert\SoftAssertion`` object.
+``verifyNow()`` is called on the ``acgrid\Assert\SoftAssertion`` object.
 
 ```php
 <?php
-\Assert\lazy()
+\acgrid\Assert\lazy()
     ->that(10, 'foo')->string()
     ->that(null, 'bar')->notEmpty()
     ->that('string', 'baz')->isArray()
@@ -120,7 +127,7 @@ The method ``that($value, $propertyPath)`` requires a property path (name), so t
 the errors afterwards.
 
 On failure ``verifyNow()`` will throw an exception
-``Assert\\LazyAssertionException`` with a combined message:
+``acgrid\Assert\\LazyAssertionException`` with a combined message:
 
     The following 3 assertions failed:
     1) foo: Value "10" expected to be string, type integer given.
@@ -134,7 +141,7 @@ This can be useful for example to build a failure response for the user.
 
 ```php
 <?php
-use Assert\Assertion;
+use acgrid\Assert\Assertion;
 
 Assertion::alnum($value);
 Assertion::between($value, $lowerLimit, $upperLimit);
@@ -215,15 +222,15 @@ Remember: When a configuration parameter is necessary, it is always passed AFTER
 
 ## Exception & Error Handling
 
-If any of the assertions fails a `Assert\AssertionFailedException` is thrown.
+If any of the assertions fails a `acgrid\Assert\AssertionFailedException` is thrown.
 You can pass an argument called ```$message``` to any assertion to control the
 exception message. Every exception contains a default message and unique message code
 by default.
 
 ```php
 <?php
-use Assert\Assertion;
-use Assert\AssertionFailedException;
+use acgrid\Assert\Assertion;
+use acgrid\Assert\AssertionFailedException;
 
 try {
     Assertion::integer($value, "The pressure of gas is measured in integers.");
@@ -234,8 +241,8 @@ try {
 }
 ```
 
-``Assert\AssertionFailedException`` is just an interface and the default
-implementation is ``Assert\InvalidArgumentException`` which extends the SPL
+``acgrid\Assert\AssertionFailedException`` is just an interface and the default
+implementation is ``acgrid\Assert\InvalidArgumentException`` which extends the SPL
 ``InvalidArgumentException``. You can change the exception being used on a
 package based level.
 
@@ -244,19 +251,36 @@ package based level.
 To shield your library from possible bugs, misinterpretations or BC breaks
 inside Assert you should introduce a library/project based assertion subclass,
 where you can override the exception thrown as well. In addition, you can
-override the ``Assert\Assertion::stringify()`` method to provide your own
+override the ``acgrid\Assert\Assertion::stringify()`` method to provide your own
 interpretations of the types during error handling.
 
 ```php
 <?php
 namespace MyProject;
 
-use Assert\Assertion as BaseAssertion;
+use acgrid\Assert\Assertion as BaseAssertion;
+use acgrid\Assert\LazyAssertion;
 
 class Assertion extends BaseAssertion
 {
     protected static $exceptionClass = 'MyProject\AssertionFailedException';
 }
+
+class MyLazyAssertion extends LazyAssertion 
+{
+     protected static $exceptionClass = 'MyProject\LazyAssertionFailedException';
+}
+```
+
+And you can configure which static class will be called for the function helpers:
+```php
+<?php
+// something like bootstrap.php, set the class to be used:
+\acgrid\Assert\chainClass(Assert\Tests\MyChain::class);
+\acgrid\Assert\lazyClass(Assert\Tests\MyLazyAssertion::class);
+// as getter:
+var_dump(\acgrid\Assert\chainClass());
+var_dump(\acgrid\Assert\lazyClass());
 ```
 
 ## Contributing

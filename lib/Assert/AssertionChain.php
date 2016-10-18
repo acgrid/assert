@@ -12,7 +12,7 @@
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
 
-namespace Assert;
+namespace acgrid\Assert;
 
 use ReflectionClass;
 
@@ -96,6 +96,8 @@ use ReflectionClass;
  */
 class AssertionChain
 {
+    protected static $assertClass = Assertion::class;
+
     private $value;
     private $defaultMessage;
     private $defaultPropertyPath;
@@ -127,7 +129,7 @@ class AssertionChain
      * @param string $methodName
      * @param array $args
      *
-     * @return \Assert\AssertionChain
+     * @return AssertionChain
      */
     public function __call($methodName, $args)
     {
@@ -135,17 +137,23 @@ class AssertionChain
             return $this;
         }
 
-        if (!method_exists('Assert\Assertion', $methodName)) {
+        if (!method_exists(static::$assertClass, $methodName)) {
             throw new \RuntimeException("Assertion '" . $methodName . "' does not exist.");
         }
+        static $reflectClass, $reflectMethods;
 
-        $reflClass = new ReflectionClass('Assert\Assertion');
-        $method = $reflClass->getMethod($methodName);
+        if(!isset($reflectClass)) $reflectClass = new ReflectionClass(static::$assertClass);
+        if(is_array($reflectMethods) && isset($reflectMethods[$methodName])){
+            $method = $reflectMethods[$methodName];
+        }else{
+            $method = $reflectMethods[$methodName] = $reflectClass->getMethod($methodName);
+        }
 
         array_unshift($args, $this->value);
         $params = $method->getParameters();
 
         foreach ($params as $idx => $param) {
+            /** @var \ReflectionParameter $param */
             if (isset($args[$idx])) {
                 continue;
             }
@@ -163,7 +171,7 @@ class AssertionChain
             $methodName = 'all' . $methodName;
         }
 
-        call_user_func_array(array('Assert\Assertion', $methodName), $args);
+        call_user_func_array(array(static::$assertClass, $methodName), $args);
 
         return $this;
     }
@@ -171,7 +179,7 @@ class AssertionChain
     /**
      * Switch chain into validation mode for an array of values.
      *
-     * @return \Assert\AssertionChain
+     * @return AssertionChain
      */
     public function all()
     {
@@ -183,7 +191,7 @@ class AssertionChain
     /**
      * Switch chain into mode allowing nulls, ignoring further assertions.
      *
-     * @return \Assert\AssertionChain
+     * @return AssertionChain
      */
     public function nullOr()
     {

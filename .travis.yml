@@ -22,12 +22,6 @@ matrix:
     - php: 5.5
       env:
       - DISABLE_XDEBUG=true
-    - php: 5.4
-      env:
-      - DISABLE_XDEBUG=true
-    - php: 5.3
-      env:
-      - DISABLE_XDEBUG=true
 
   fast_finish: true
   allow_failures:
