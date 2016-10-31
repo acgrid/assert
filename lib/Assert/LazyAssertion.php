@@ -127,11 +127,14 @@ class LazyAssertion
 
     /**
      * @throws LazyAssertionException
+     * @return bool
      */
     public function verifyNow()
     {
         if ($this->errors) {
             throw call_user_func([static::$exceptionClass, 'fromErrors'], $this->errors);
         }
+
+        return true;
     }
 }
